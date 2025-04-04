@@ -1,8 +1,11 @@
 import matplotlib.pyplot as plt
-# paste output into path list and replace all ") (" with "), ("
-path = [
-    (1,1), (1,2), (1,3), (2,4), (1,5), (1,6), (2,6), (3,6), (4,5), (5,6), (6,6), (6,5), (6,4), (6,3), (6,2), (6,1), (5,1), (4,1), (3,1), (3,2), (4,3)
-]
+import re
+# paste output into path string
+path = """
+    (1,1)(1,2)(1,3)(2,4)(1,5)(1,6)(2,6)(3,6)(4,5)(5,6)(6,6)(6,5)(6,4)(6,3)(6,2)(6,1)(5,1)(4,1)(3,1)(3,2)(4,3)
+"""
+
+path = [(int(x), int(y)) for x, y in re.findall(r"\((\d+),(\d+)\)", path)]
 
 x_coords, y_coords = zip(*path)
 
