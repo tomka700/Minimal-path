@@ -139,9 +139,9 @@ inline void dfs(int x, int y, std::bitset<total_bits>& mask, int len,
                 if (len <= global_best) {
                     global_best = len;
                     global_best_path = path;
-                    std::cout << "New best: " << len << ", Path:";
+                    std::cout << "New best: " << len << ", Path: ";
                     for (const auto& p : path) {
-                        std::cout << " (" << p.first << "," << p.second << ")";
+                        std::cout << "(" << p.first << "," << p.second << ")";
                     }
                     std::cout << "\n";
                 }
