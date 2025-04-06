@@ -8,14 +8,14 @@
 15 10  3
 16 15  9
 21 18?12?
-24 23?20?
+24 23?36?
 22 32? 5?
 27 37?
 27 46?
 28 55?
 33 62?
 36 71?
-34 84?
+34 84? 5?
 # straights, # diagonals, # unique optimal solutions
 n = nth line of the file, ? = unproven
 */
