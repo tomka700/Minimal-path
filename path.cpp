@@ -130,10 +130,10 @@ inline void dfs(int x, int y, std::bitset<total_bits>& mask, int len,
                 std::vector<std::pair<int, int>>& path, int& local_best,
                 std::vector<std::pair<int, int>>& local_best_path) {
     int effective_best = std::min(local_best, global_best.load(std::memory_order_relaxed));
-    if (len + (total_bits - mask.count() + 2) / 3 > effective_best) [[likely]] return;
+    const int count = mask.count();
+    if (len + (total_bits - count + 2) / 3 > effective_best) [[likely]] return;
 
-    constexpr int lower_bound = (n > 3) ? (n * n - 2) / 3 : 0;
-    if (len >= lower_bound && mask.all()) [[likely]] {
+    if (count == mask.size()) {
         if (len <= local_best) [[unlikely]] {
             local_best = len;
             local_best_path = path;
