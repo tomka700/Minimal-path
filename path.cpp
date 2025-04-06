@@ -190,9 +190,8 @@ void run_parallel_search(const std::vector<std::pair<int, int>>& starts) {
     std::vector<std::jthread> threads;
     threads.reserve(num_threads);
     for (int i = 0; i < num_threads; ++i) {
-        threads.emplace_back([i, num_threads, &starts](std::stop_token st) {
+        threads.emplace_back([i, num_threads, &starts] {
             for (size_t j = i; j < starts.size(); j += num_threads) {
-                if (st.stop_requested()) break;
                 search_from(starts[j]);
             }
         });
