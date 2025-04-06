@@ -133,7 +133,7 @@ inline void dfs(int x, int y, std::bitset<total_bits>& mask, int len,
     const int count = mask.count();
     if (len + (total_bits - count + 2) / 3 > effective_best) [[likely]] return;
 
-    if (count == mask.size()) {
+    if (count == total_bits) {
         if (len <= local_best) [[unlikely]] {
             local_best = len;
             local_best_path = path;
