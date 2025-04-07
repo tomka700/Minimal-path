@@ -7,15 +7,15 @@
 15  5  6
 15 10  3
 16 15  9
-21 18?12?
+21 18?18?
 21 25? 8?
-22 32? 6?
+22 32?12?
 27 37?22?
 27 46? 6?
 28 55?
 33 62?
-36 71?
-34 84? 5?
+33 73? 6?
+34 84? 6?
 # straights, # diagonals, # unique optimal solutions
 n = nth line of the file, ? = unproven
 */
