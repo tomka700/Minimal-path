@@ -72,7 +72,6 @@ possible optimizations:
 #include <vector>
 #include <cmath>
 #include <cstdint>
-#include <limits>
 #include <thread>
 #include <atomic>
 #include <mutex>
@@ -118,7 +117,7 @@ constexpr std::array<std::array<bool, n+1>, n+1> create_is_outer() {
 }
 constexpr auto is_outer = create_is_outer();
 
-std::atomic<int> global_best(std::numeric_limits<int>::max());
+std::atomic<int> global_best = MAX_LEN;
 std::vector<std::pair<int, int>> global_best_path;
 std::mutex global_mutex;
 /*
@@ -129,7 +128,7 @@ bool are_zeros_connected(std::bitset<total_bits>& mask) {
 inline void dfs(int x, int y, std::bitset<total_bits>& mask, int len, 
                 std::vector<std::pair<int, int>>& path, int& local_best,
                 std::vector<std::pair<int, int>>& local_best_path) {
-    int effective_best = std::min(local_best, global_best.load(std::memory_order_relaxed));
+    const int effective_best = std::min(local_best, global_best.load(std::memory_order_relaxed));
     const int count = mask.count();
     if (len + (total_bits - count + 2) / 3 > effective_best) [[likely]] return;
 
@@ -161,12 +160,7 @@ inline void dfs(int x, int y, std::bitset<total_bits>& mask, int len,
 
         const int added_count = (vertex_masks[nx][ny] & invmask).count();
         if (added_count < dir / 4 + 2 && (n != 3 || added_count == 0)) [[likely]] continue;
-
-        /* should be unreachable, useful in case of testing new heuristic
-        const int new_len = len + 1;
-        if (new_len > MAX_LEN) [[unlikely]] continue;
-        */
-
+        
         path.push_back({nx, ny});
         auto new_mask = mask | vertex_masks[nx][ny];
         dfs(nx, ny, new_mask, len + 1, path, local_best, local_best_path);
