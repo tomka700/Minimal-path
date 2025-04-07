@@ -172,7 +172,7 @@ inline void dfs(int x, int y, std::bitset<total_bits>& mask, int len,
         if (is_outer[nx][ny]) [[unlikely]] continue;
 
         const int added_count = (vertex_masks[nx][ny] & invmask).count();
-        if (added_count < dir.max_added && (n != 3 || added_count == 0)) [[likely]] continue;
+        if (n != 3 ? added_count < dir.max_added : (dir.dx != 0 && dir.dy != 0 || added_count == 0)) [[likely]] continue;
         
         path.push_back({nx, ny});
         auto new_mask = mask | vertex_masks[nx][ny];
