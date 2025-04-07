@@ -83,9 +83,23 @@ constexpr int n = 9;
 constexpr int MAX_LEN = 50;
 
 constexpr int total_bits = n * n;
-// !!! added_count heuristic depends on the orthogonals to be in the first half
-constexpr int dx[8] = {1, 0, -1, 0, 1, -1, 1, -1};
-constexpr int dy[8] = {0, 1, 0, -1, 1, 1, -1, -1};
+
+struct Dir {
+    int dx;
+    int dy;
+    int max_added;
+};
+
+constexpr Dir dirs[8] = {
+    {1, 0, 2},
+    {0, 1, 2},
+    {-1, 0, 2},
+    {0, -1, 2},
+    {1, 1, 3},
+    {-1, 1, 3},
+    {1, -1, 3},
+    {-1, -1, 3}
+};
 
 using MaskType = std::array<std::array<std::bitset<total_bits>, n+1>, n+1>;
 
@@ -152,14 +166,13 @@ inline void dfs(int x, int y, std::bitset<total_bits>& mask, int len,
         return;
     }
 
-    const auto invmask = ~mask;
-    for (int dir = 0; dir < 8; ++dir) {
-        const int nx = x + dx[dir];
-        const int ny = y + dy[dir];
+    for (const auto& dir : dirs) {
+        const int nx = x + dir.dx;
+        const int ny = y + dir.dy;
         if (is_outer[nx][ny]) [[unlikely]] continue;
 
         const int added_count = (vertex_masks[nx][ny] & invmask).count();
-        if (added_count < dir / 4 + 2 && (n != 3 || added_count == 0)) [[likely]] continue;
+        if (added_count < dir.max_added && (n != 3 || added_count == 0)) [[likely]] continue;
         
         path.push_back({nx, ny});
         auto new_mask = mask | vertex_masks[nx][ny];
