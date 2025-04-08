@@ -7,12 +7,12 @@
 15  5  6
 15 10  3
 16 15  9
-21 18?18?
+21 18 18?
 21 25? 8?
-22 32?12?
+22 32?22?
 27 37?22?
 27 46? 6?
-28 55?
+28 55?20?
 33 62?
 33 73? 6?
 34 84? 6?
@@ -34,11 +34,9 @@ notes:
 - this code only tests (1, 1) and (1, 0) moves
 - Chebysev distance is used as 3/1 > 2/1, just like 3/sqrt2 > 2/1 and it is faster
 - all moves of optimal solutions for 3 < n < 8 are zero waste, this is enforced as a general rule, see added_count
-  (only relevant once brute-forcing is no longer possible)
 - the starting positions are an 8th of the inner n - 2 by n - 2 square minus the middle 1 or 4 vertices for n > 3,
   there are (n / 2 * (n / 2 + 1) / 2 - 1) (floordivs) many of them
-- the local_best, global_best conditions are permissive in order to print all optimal solutions,
-  the variable names do not reflect this as it was changed later
+- the global_best condition is permissive in order to print all optimal solutions
 - vertex_masks is a matrix of bitmasks that are only true for every vertex's surrounding squares,
   it is used as it is faster than calculating the surrounding indices at every step
 - n = 8, 9 are good for testing as they run in human time
