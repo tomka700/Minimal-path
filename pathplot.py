@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import re
 
-# paste output into data string block
+# paste output into data string block, equivalent paths will be filtered out
 data = """
 New best: 20, Path: (2,1)(1,1)(1,2)(1,3)(2,3)(3,3)(4,2)(4,1)(5,1)(6,1)(6,2)(6,3)(5,4)(6,5)(6,6)(5,6)(4,6)(3,5)(2,6)(1,6)(1,5)
 New best: 20, Path: (1,1)(2,1)(3,1)(4,1)(4,2)(3,3)(2,3)(1,3)(1,4)(1,5)(1,6)(2,6)(3,5)(4,6)(5,6)(6,6)(6,5)(5,4)(6,3)(6,2)(6,1)
@@ -20,11 +20,47 @@ New best: 20, Path: (1,1)(1,2)(1,3)(2,4)(1,5)(1,6)(2,6)(3,6)(4,5)(5,6)(6,6)(6,5)
 New best: 20, Path: (1,1)(1,2)(1,3)(2,4)(1,5)(1,6)(2,6)(3,6)(4,5)(5,6)(6,6)(6,5)(6,4)(6,3)(5,3)(4,3)(3,2)(3,1)(4,1)(5,1)(6,1)
 """
 
+def all_symmetries(path, grid_size):
+    rotations = [
+        lambda p: p,
+        lambda p: [(y, grid_size + 1 - x) for x, y in p],
+        lambda p: [(grid_size + 1 - x, grid_size + 1 - y) for x, y in p],
+        lambda p: [(grid_size + 1 - y, x) for x, y in p]
+    ]
+    
+    mirror = lambda p: [(y, x) for x, y in p]
+    
+    return {
+        tuple(transformation)
+        for rot in rotations
+        for transformation in (
+            rot(path),
+            mirror(rot(path)),
+            list(reversed(rot(path))),
+            list(reversed(mirror(rot(path))))
+        )
+    }
+
+def filter_paths(paths):
+    grid_size = max(max(x, y) for path in paths for (x, y) in path)
+    seen = set()
+    unique_paths = []
+    for path in paths:
+        sym_set = all_symmetries(path, grid_size)
+        if sym_set & seen:
+            continue
+        unique_paths.append(path)
+        seen.update(sym_set)
+        
+    return unique_paths
+
 lines = data.strip().split('\n')
 paths = []
 for line in lines:
         path = [(int(x), int(y)) for x, y in re.findall(r"\((\d+),(\d+)\)", line)]
         paths.append(path)
+
+paths = filter_paths(paths)
 
 for i, path in enumerate(paths):
     x_coords, y_coords = zip(*path)
