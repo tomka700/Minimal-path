@@ -25,6 +25,7 @@ guide to running optimally:
 - close everything else that would waste CPU resources
 - set n
 - set MAX_LEN to the current best (sum of the first two numbers in the above matrix)
+  set it to the current best - 1 if you only wish to prove that the current best is optimal
 - use the first line of the file to compile
 */
 
@@ -33,8 +34,6 @@ notes:
 - this code only tests (1, 1) and (1, 0) moves
 - Chebysev distance is used as 3/1 > 2/1, just like 3/sqrt2 > 2/1 and it is faster
 - all moves of optimal solutions for 3 < n < 8 are zero waste, this is enforced as a general rule, see added_count
-- almost all current best solutions start or end at (1, 1) or (1, 2),
-  n = 12, 15 break this pattern, but those solutions are transformable into ones that do follow it
   (only relevant once brute-forcing is no longer possible)
 - the starting positions are an 8th of the inner n - 2 by n - 2 square minus the middle 1 or 4 vertices for n > 3,
   there are (n / 2 * (n / 2 + 1) / 2 - 1) (floordivs) many of them
@@ -132,40 +131,34 @@ constexpr std::array<std::array<bool, n+1>, n+1> create_is_outer() {
 constexpr auto is_outer = create_is_outer();
 
 std::atomic<int> global_best = MAX_LEN;
-std::vector<std::pair<int, int>> global_best_path;
+std::atomic<bool> found = false;
 std::mutex global_mutex;
 /*
 bool are_zeros_connected(std::bitset<total_bits>& mask) {
     return false
 }
 */
-inline void dfs(int x, int y, std::bitset<total_bits>& mask, int len, 
-                std::vector<std::pair<int, int>>& path, int& local_best,
-                std::vector<std::pair<int, int>>& local_best_path) {
-    const int effective_best = std::min(local_best, global_best.load(std::memory_order_relaxed));
+inline void dfs(int x, int y, std::bitset<total_bits>& mask, int len, std::vector<std::pair<int, int>>& path) {
     const int count = mask.count();
-    if (len + (total_bits - count + 2) / 3 > effective_best) [[likely]] return;
+    const int current_best = global_best.load(std::memory_order_relaxed);
+    if (len + (total_bits - count + 2) / 3 > current_best) [[likely]] return;
 
-    if (count == total_bits) {
-        if (len <= local_best) [[unlikely]] {
-            local_best = len;
-            local_best_path = path;
-            if (len <= global_best.load(std::memory_order_relaxed)) [[unlikely]] {
-                std::lock_guard<std::mutex> lock(global_mutex);
-                if (len <= global_best) {
-                    global_best = len;
-                    global_best_path = path;
-                    std::cout << "New best: " << len << ", Path: ";
-                    for (const auto& p : path) {
-                        std::cout << "(" << p.first << "," << p.second << ")";
-                    }
-                    std::cout << "\n";
+    if (count == total_bits) [[unlikely]] {
+        if (len <= current_best) [[unlikely]] {
+            std::lock_guard<std::mutex> lock(global_mutex);
+            if (len <= global_best) {
+                found = true;
+                global_best = len;
+                std::cout << "New best: " << len << ", Path: ";
+                for (const auto& p : path) {
+                    std::cout << "(" << p.first << "," << p.second << ")";
                 }
+                std::cout << "\n";
             }
         }
         return;
     }
-
+    const auto invmask = ~mask;
     for (const auto& dir : dirs) {
         const int nx = x + dir.dx;
         const int ny = y + dir.dy;
@@ -176,19 +169,17 @@ inline void dfs(int x, int y, std::bitset<total_bits>& mask, int len,
         
         path.push_back({nx, ny});
         auto new_mask = mask | vertex_masks[nx][ny];
-        dfs(nx, ny, new_mask, len + 1, path, local_best, local_best_path);
+        dfs(nx, ny, new_mask, len + 1, path);
         path.pop_back();
     }
 }
 
 void search_from(const std::pair<int, int>& start) {
-    int local_best = std::numeric_limits<int>::max();
-    std::vector<std::pair<int, int>> local_best_path;
     std::vector<std::pair<int, int>> path;
     std::bitset<total_bits> mask = vertex_masks[start.first][start.second];
     path.reserve(MAX_LEN + 1);
     path.push_back(start);
-    dfs(start.first, start.second, mask, 0, path, local_best, local_best_path);
+    dfs(start.first, start.second, mask, 0, path);
 }
 
 void run_parallel_search(const std::vector<std::pair<int, int>>& starts) {
@@ -216,6 +207,9 @@ int main() {
     }
 
     run_parallel_search(starts);
+    if (!found) {
+        std::cout << "No solution found.";
+    }
     /*
     long long total_runtime = 0;
     int runs = 5;
