@@ -2,34 +2,34 @@
 
 ### Results
 `? = unproven`
-| n  | # Straights | # Diagonals | # Unique Solutions |
-|----|-------------|-------------|--------------------|
-| 1  | 0           | 0           | 1                  |
-| 2  | 0           | 0           | 1                  |
-| 3  | 3           | 0           | 1                  |
-| 4  | 6           | 0           | 1                  |
-| 5  | 9           | 1           | 1                  |
-| 6  | 10          | 4           | 3                  |
-| 7  | 15          | 5           | 6                  |
-| 8  | 15          | 10          | 3                  |
-| 9  | 16          | 15          | 9                  |
-| 10 | 21          | 18          | 18?                |
-| 11 | 21?         | 25?         | 8?                 |
-| 12 | 22?         | 32?         | 22?                |
-| 13 | 27?         | 37?         | 22?                |
-| 14 | 27?         | 46?         | 6?                 |
-| 15 | 28?         | 55?         | 20?                |
-| 16 | 33?         | 62?         |                    |
-| 17 | 33?         | 73?         | 6?                 |
-| 18 | 34?         | 84?         | 6?                 |
+| n  | Current Best | # Straights | # Diagonals | # Unique Solutions |
+|----|--------------|-------------|-------------|--------------------|
+| 1  | 0            | 0           | 0           | 1                  |
+| 2  | 0            | 0           | 0           | 1                  |
+| 3  | 3            | 3           | 0           | 1                  |
+| 4  | 6            | 6           | 0           | 1                  |
+| 5  | 10           | 9           | 1           | 1                  |
+| 6  | 14           | 10          | 4           | 3                  |
+| 7  | 20           | 15          | 5           | 6                  |
+| 8  | 25           | 15          | 10          | 3                  |
+| 9  | 31           | 16          | 15          | 9                  |
+| 10 | 39           | 21          | 18          | 18?                |
+| 11 | 46?          | 21?         | 25?         | 8?                 |
+| 12 | 54?          | 22?         | 32?         | 22?                |
+| 13 | 64?          | 27?         | 37?         | 22?                |
+| 14 | 73?          | 27?         | 46?         | 6?                 |
+| 15 | 83?          | 28?         | 55?         | 20?                |
+| 16 | 95?          | 33?         | 62?         |                    |
+| 17 | 106?         | 33?         | 73?         | 6?                 |
+| 18 | 118?         | 34?         | 84?         | 6?                 |
 
 ---
 
 ### Running
 - Close everything else that would waste CPU resources
 - Set `n`
-- Set `MAX_LEN` to the current best (sum of the first two numbers in the above table)
-  - Set it to the current best - 1 if you only wish to prove that the current best is optimal
+- Set `MAX_LEN` to the `Current Best`
+  - Set it to the `Current Best` - 1 if you only wish to prove that the current best is optimal
 ```ps
 g++ -std=c++2b -Ofast -march=native -flto path.cpp -o path
 ```
