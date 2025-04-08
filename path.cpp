@@ -20,51 +20,6 @@
 n = nth line of the file, ? = unproven
 */
 
-/*
-guide to running optimally:
-- close everything else that would waste CPU resources
-- set n
-- set MAX_LEN to the current best (sum of the first two numbers in the above matrix)
-  set it to the current best - 1 if you only wish to prove that the current best is optimal
-- use the first line of the file to compile
-*/
-
-/*
-notes:
-- this code only tests (1, 1) and (1, 0) moves
-- Chebysev distance is used as 3/1 > 2/1, just like 3/sqrt2 > 2/1 and it is faster
-- all moves of optimal solutions for 3 < n < 8 are zero waste, this is enforced as a general rule, see added_count
-- the starting positions are an 8th of the inner n - 2 by n - 2 square minus the middle 1 or 4 vertices for n > 3,
-  there are (n / 2 * (n / 2 + 1) / 2 - 1) (floordivs) many of them
-- the global_best condition is permissive in order to print all optimal solutions
-- vertex_masks is a matrix of bitmasks that are only true for every vertex's surrounding squares,
-  it is used as it is faster than calculating the surrounding indices at every step
-- n = 8, 9 are good for testing as they run in human time
-*/
-
-/*
-possible optimizations:
-- starting direction pruning on the lines of symmetry
-- only checking 5 dirs instead of 8 based on the last dir,
-  maybe even less as we only need one bit to be already true as per the zero waste note
-  (unlikely due to the above note on vertex_masks)
-- better branch prediction (current was tested at n = 8)
-- making use of more / better built-ins?
-
-- checking whether or not the remaining 0s are connected (bfs is slower for n < 10 and thus hard to test)
-- using a sliding window instead of the entirety of vertex_masks? (unlikely due to the above note)
-
-- using constexpr more?
-- better compile flags?
-- better max update logic?
-- better multithreading?
-- better order in which directions are checked??
-- better brute-force algorithm??
-- better ...
-
-- rewrite to use GPU instead??
-*/
-
 #include <iostream>
 #include <vector>
 #include <cmath>
@@ -97,7 +52,7 @@ constexpr Dir dirs[8] = {
     {1, -1, 3},
     {-1, -1, 3}
 };
-
+// matrix of bitmasks that are only true for every vertex's surrounding squares
 using MaskType = std::array<std::array<std::bitset<total_bits>, n+1>, n+1>;
 
 constexpr MaskType create_vertex_masks() {
