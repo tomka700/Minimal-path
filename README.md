@@ -41,9 +41,6 @@ g++ -std=c++2b -Ofast -march=native -flto path.cpp -o path
 - All moves of optimal solutions for 3 < n < 8 are zero waste, this is enforced as a general rule, see `added_count`
 - The starting positions are an 8th of the inner $(n - 2)(n - 2)$ square minus the middle 1 or 4 vertices for $n > 3$
   - there are $\frac{n\left(\frac{n}{2}+1\right)}{2} - 1$ (floordivs) many of them
-- The `global_best` condition is permissive in order to print all optimal solutions
-- `vertex_masks` is a matrix of bitmasks that are only true for every vertex's surrounding squares,  
- it is used as it is faster than calculating the surrounding indices at every step
 - `n = 8, 9` are good for testing as they run in human time
 
 ---
