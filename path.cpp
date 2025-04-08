@@ -97,6 +97,7 @@ inline void dfs(int x, int y, std::bitset<total_bits>& mask, int len, std::vecto
     if (len + (total_bits - count + 2) / 3 > current_best) [[likely]] return;
 
     if (count == total_bits) [[unlikely]] {
+        // permissive in order to print all optimal solutions
         if (len <= current_best) [[unlikely]] {
             std::lock_guard<std::mutex> lock(global_mutex);
             if (len <= global_best) {
