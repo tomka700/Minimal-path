@@ -1,25 +1,3 @@
-// g++ -std=c++2b -Ofast -march=native -flto path.cpp -o path
-/*
- 3  0  1
- 6  0  1
- 9  1  1
-10  4  3
-15  5  6
-15 10  3
-16 15  9
-21 18 18?
-21 25? 8?
-22 32?22?
-27 37?22?
-27 46? 6?
-28 55?20?
-33 62?
-33 73? 6?
-34 84? 6?
-# straights, # diagonals, # unique optimal solutions
-n = nth line of the file, ? = unproven
-*/
-
 #include <iostream>
 #include <vector>
 #include <cmath>
