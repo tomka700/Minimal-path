@@ -29,7 +29,7 @@
 - Close everything else that would waste CPU resources
 - Set `n`
 - Set `MAX_LEN` to the `Current Best`
-  - Set it to the `Current Best` - 1 if you only wish to prove that the current best is optimal
+  - Set it to the `Current Best - 1` if you only wish to prove that the current best is optimal
 ```ps
 g++ -std=c++2b -Ofast -march=native -flto path.cpp -o path
 ```
