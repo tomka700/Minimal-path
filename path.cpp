@@ -34,7 +34,7 @@ constexpr Dir dirs[8] = {
 using MaskType = std::array<std::array<std::bitset<total_bits>, n+1>, n+1>;
 
 constexpr MaskType create_vertex_masks() {
-    MaskType masks{};
+    MaskType masks;
     for (int x = 0; x <= n; ++x) {
         for (int y = 0; y <= n; ++y) {
             std::bitset<total_bits> mask;
@@ -50,7 +50,7 @@ constexpr MaskType create_vertex_masks() {
 constexpr auto vertex_masks = create_vertex_masks();
 
 constexpr std::array<std::array<bool, n+1>, n+1> create_is_outer() {
-    std::array<std::array<bool, n+1>, n+1> is_outer = {};
+    std::array<std::array<bool, n+1>, n+1> is_outer;
     for (int i = 0; i <= n; ++i) {
         is_outer[i][0] = true;
         is_outer[i][n] = true;
@@ -69,7 +69,8 @@ bool are_zeros_connected(std::bitset<total_bits>& mask) {
     return false
 }
 */
-inline void dfs(int x, int y, std::bitset<total_bits>& mask, int len, std::vector<std::pair<int, int>>& path) {
+inline void dfs(std::bitset<total_bits>& mask, std::vector<std::pair<int, int>>& path) {
+    const int len = path.size() - 1;
     const int count = mask.count();
     const int current_best = global_best.load(std::memory_order_relaxed);
     if (len + (total_bits - count + 2) / 3 > current_best) [[likely]] return;
@@ -90,6 +91,7 @@ inline void dfs(int x, int y, std::bitset<total_bits>& mask, int len, std::vecto
         }
         return;
     }
+    const auto [x, y] = path.back();
     const auto invmask = ~mask;
     for (const auto& dir : dirs) {
         const int nx = x + dir.dx;
@@ -101,7 +103,7 @@ inline void dfs(int x, int y, std::bitset<total_bits>& mask, int len, std::vecto
         
         path.push_back({nx, ny});
         auto new_mask = mask | vertex_masks[nx][ny];
-        dfs(nx, ny, new_mask, len + 1, path);
+        dfs(new_mask, path);
         path.pop_back();
     }
 }
@@ -111,7 +113,7 @@ void search_from(const std::pair<int, int>& start) {
     std::bitset<total_bits> mask = vertex_masks[start.first][start.second];
     path.reserve(MAX_LEN + 1);
     path.push_back(start);
-    dfs(start.first, start.second, mask, 0, path);
+    dfs(mask, path);
 }
 
 void run_parallel_search(const std::vector<std::pair<int, int>>& starts) {
