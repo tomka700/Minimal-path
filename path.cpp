@@ -9,8 +9,8 @@
 #include <array>
 #include <bitset>
 
-constexpr int n = 9;
-constexpr int MAX_LEN = 50;
+#define n 9
+#define MAX_LEN 31
 
 constexpr int total_bits = n * n;
 
