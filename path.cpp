@@ -21,14 +21,14 @@ struct Dir {
 };
 
 constexpr Dir dirs[8] = {
+    {-1, 1, 3},
+    {-1, -1, 3},
+    {1, -1, 3},
+    {1, 1, 3},
+    {0, -1, 2},
     {1, 0, 2},
     {0, 1, 2},
-    {-1, 0, 2},
-    {0, -1, 2},
-    {1, 1, 3},
-    {-1, 1, 3},
-    {1, -1, 3},
-    {-1, -1, 3}
+    {-1, 0, 2}
 };
 // matrix of bitmasks that are only true for every vertex's surrounding squares
 using MaskType = std::array<std::array<std::bitset<total_bits>, n+1>, n+1>;
@@ -91,8 +91,8 @@ inline void dfs(std::bitset<total_bits>& mask, std::vector<std::pair<int, int>>&
         }
         return;
     }
-    const auto [x, y] = path.back();
-    const auto invmask = ~mask;
+    const auto& [x, y] = path.back();
+    const auto& invmask = ~mask;
     for (const auto& dir : dirs) {
         const int nx = x + dir.dx;
         const int ny = y + dir.dy;
