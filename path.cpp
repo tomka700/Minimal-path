@@ -161,7 +161,7 @@ inline void run_parallel_search(const std::vector<std::pair<int, int>>& starts) 
     threads.reserve(num_threads);
     for (int i = 0; i < num_threads; ++i) {
         threads.emplace_back([i, num_threads, &starts] {
-            for (size_t j = i; j < static_cast<int>(starts.size()); j += num_threads) {
+            for (int j = i; j < static_cast<int>(starts.size()); j += num_threads) {
                 search_from(starts[j]);
             }
         });
