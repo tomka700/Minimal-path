@@ -99,7 +99,7 @@ inline void dfs(std::bitset<total_bits>& mask, std::vector<std::pair<int, int>>&
         if (is_outer[nx][ny]) [[unlikely]] continue;
 
         const int added_count = (vertex_masks[nx][ny] & invmask).count();
-        if (n != 3 ? added_count < dir.max_added : (dir.dx != 0 && dir.dy != 0 || added_count == 0)) [[likely]] continue;
+        if (n != 3 ? added_count < dir.max_added : ((dir.dx != 0 && dir.dy != 0) || added_count == 0)) [[likely]] continue;
         
         path.push_back({nx, ny});
         auto new_mask = mask | vertex_masks[nx][ny];
@@ -123,7 +123,7 @@ void run_parallel_search(const std::vector<std::pair<int, int>>& starts) {
     threads.reserve(num_threads);
     for (int i = 0; i < num_threads; ++i) {
         threads.emplace_back([i, num_threads, &starts] {
-            for (size_t j = i; j < starts.size(); j += num_threads) {
+            for (size_t j = i; j < static_cast<int>(starts.size()); j += num_threads) {
                 search_from(starts[j]);
             }
         });
