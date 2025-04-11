@@ -115,15 +115,33 @@ inline void force_obvious_moves(std::bitset<total_bits>& mask, std::vector<std::
         mask |= vertex_masks[nx][ny];
     };
     const auto& [x, y] = path.back();
+    if (y == 1){
+        switch (x) {
+            case 1:
+                step(2, 1);
+                break;
+            case 2:
+                step(1, 1);
+                step(1, 2);
+                break;
+            case 3:
+                step(2, 1);
+                step(1, 1);
+                step(1, 2);
+                break;
+            case 4:
+                step(3, 2);
+                step(2, 1);
+                step(1, 1);
+                step(1, 2);
+                step(1, 3);
+                step(2, 4);
+                step(1, 5);
+                break;
+        }
+    }
     if (y == 2) {
         step(x, 1);
-    }
-    if (x == 1 && y == 1) {
-        step(2, 1);
-    }
-    if (x == 2 && y == 1) {
-        step(1, 1);
-        step(1, 2);
     }
 }
 
