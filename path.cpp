@@ -108,15 +108,35 @@ inline void dfs(std::bitset<total_bits>& mask, std::vector<std::pair<int, int>>&
     }
 }
 
-void search_from(const std::pair<int, int>& start) {
+constexpr void force_obvious_moves(std::bitset<total_bits>& mask, std::vector<std::pair<int, int>>& path) {
+    if (n < 3) return;
+    auto step = [&](int nx, int ny) {
+        path.push_back({nx, ny});
+        mask |= vertex_masks[nx][ny];
+    };
+    const auto& [x, y] = path.back();
+    if (y == 2) {
+        step(x, 1);
+    }
+    if (x == 1 && y == 1) {
+        step(2, 1);
+    }
+    if (x == 2 && y == 1) {
+        step(1, 1);
+        step(1, 2);
+    }
+}
+
+constexpr void search_from(const std::pair<int, int>& start) {
     std::vector<std::pair<int, int>> path;
     std::bitset<total_bits> mask = vertex_masks[start.first][start.second];
     path.reserve(MAX_LEN + 1);
     path.push_back(start);
+    force_obvious_moves(mask, path);
     dfs(mask, path);
 }
 
-void run_parallel_search(const std::vector<std::pair<int, int>>& starts) {
+constexpr void run_parallel_search(const std::vector<std::pair<int, int>>& starts) {
     const int hw_concurrency = static_cast<int>(std::thread::hardware_concurrency());
     const int num_threads = starts.empty() ? 0 : std::clamp(hw_concurrency, 1, static_cast<int>(starts.size()));
     std::vector<std::jthread> threads;
