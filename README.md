@@ -33,6 +33,7 @@
 ```ps
 g++ -std=c++2b -Ofast -march=native -flto path.cpp -o path
 ```
+**Disclaimer:** `n = 10` takes days to run, anything beyond yet to has produced an optimal output
 
 ---
 
