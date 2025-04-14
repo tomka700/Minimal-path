@@ -98,12 +98,13 @@ inline void dfs(std::bitset<total_bits>& mask, std::vector<std::pair<int, int>>&
         const int ny = y + dir.dy;
         if (is_outer[nx][ny]) [[unlikely]] continue;
 
-        const int added_count = (vertex_masks[nx][ny] & invmask).count();
-        if (n != 3 ? added_count < dir.max_added : ((dir.dx != 0 && dir.dy != 0) || added_count == 0)) [[likely]] continue;
+        auto added = vertex_masks[nx][ny] & invmask;
+        if (n != 3 ? added.count() < dir.max_added : ((dir.dx != 0 && dir.dy != 0) || added.count() == 0)) [[likely]] continue;
         
         path.push_back({nx, ny});
-        auto new_mask = mask | vertex_masks[nx][ny];
-        dfs(new_mask, path);
+        mask |= vertex_masks[nx][ny];
+        dfs(mask, path);
+        mask &= ~added;
         path.pop_back();
     }
 }
