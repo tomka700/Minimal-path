@@ -49,17 +49,23 @@ g++ -std=c++2b -Ofast -march=native -flto path.cpp -o path
 
 ---
 
+### Todo
+- make search_state `std::pair`
+- prune starting dirs by symmetry
+- constexpr calculate all forced starting path sections and start threads from there
+
+---
+
 ### Possible Optimizations
 
-- starting direction pruning on the lines of symmetry
-- only checking 5 `dir`s instead of 8 based on the last `dir`
-  - unlikely due to the above note on vertex_masks
 - better branch prediction
   - current was tested at `n = 8`
 - making use of more / better built-ins?
   <br><br>
 - checking whether or not the remaining 0s are connected
   - bfs is slower for `n < 10` and thus hard to test
+- only checking 5 `dir`s instead of 8 based on the last `dir`
+  - unlikely due to the above note on vertex_masks
 - using a sliding window instead of the entirety of `vertex_masks`?
   - unlikely due to the above note
   <br><br>
