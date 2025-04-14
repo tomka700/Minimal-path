@@ -4,6 +4,7 @@
 `? = unproven`
 | n  | Current Best | # Straights | # Diagonals | # Unique Solutions |
 |----|--------------|-------------|-------------|--------------------|
+| 0  | 0            | 0           | 0           | 1                  |
 | 1  | 0            | 0           | 0           | 1                  |
 | 2  | 0            | 0           | 0           | 1                  |
 | 3  | 3            | 3           | 0           | 1                  |
@@ -66,8 +67,6 @@ g++ -std=c++2b -Ofast -march=native -flto path.cpp -o path
 - better compile flags?
 - better max update logic?
 - better multithreading?
-- better order in which directions are checked??
-- better brute-force algorithm??
 - better ...
   <br><br>
 - rewrite to use GPU instead??
