@@ -187,9 +187,10 @@ int main() {
     int runs = 5;
     for (int i = 0; i < runs; ++i) {
         auto start_time = std::chrono::high_resolution_clock::now();
-
-        run_parallel_search(starts);
-    
+        {
+            run_parallel_search(starts);
+            global_best = MAX_LEN;
+        }
         auto end_time = std::chrono::high_resolution_clock::now();
         total_runtime += std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
     }
