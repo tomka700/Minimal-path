@@ -99,7 +99,7 @@ inline void dfs(std::bitset<total_bits>& mask, std::vector<std::pair<int, int>>&
         if (is_outer[nx][ny]) [[unlikely]] continue;
 
         auto added = vertex_masks[nx][ny] & invmask;
-        if (n != 3 ? added.count() < dir.max_added : ((dir.dx != 0 && dir.dy != 0) || added.count() == 0)) [[likely]] continue;
+        if (n != 3 ? static_cast<int>(added.count()) < dir.max_added : ((dir.dx != 0 && dir.dy != 0) || static_cast<int>(added.count()) == 0)) [[likely]] continue;
         
         path.push_back({nx, ny});
         mask |= vertex_masks[nx][ny];
