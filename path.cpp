@@ -109,15 +109,21 @@ inline void dfs(std::bitset<total_bits>& mask, std::vector<std::pair<int, int>>&
     }
 }
 
-inline void force_obvious_moves(std::bitset<total_bits>& mask, std::vector<std::pair<int, int>>& path) {
+inline void force_obvious_moves(std::vector<std::vector<std::pair<int, int>>>& paths) {
     if (n < 3) return;
-    auto step = [&](int nx, int ny) {
-        path.push_back({nx, ny});
-        mask |= vertex_masks[nx][ny];
-    };
-    const auto& [x, y] = path.back();
-    if (y == 1) {
-        switch (x) {
+
+    for (auto& path : paths) {
+        auto& [x, y] = path.back();
+
+        auto step = [&](int nx, int ny) {
+            path.push_back({nx, ny});
+        };
+
+        switch (y) {
+        case 2:
+            step(x, 1);
+        case 1:
+            switch (x) {
             case 4:
                 step(3, 2);
             case 3:
@@ -126,48 +132,51 @@ inline void force_obvious_moves(std::bitset<total_bits>& mask, std::vector<std::
                 step(1, 1);
             case 1:
                 step(1, 2);
-                break;
+            }
         }
     }
-    if (y == 2) {
-        step(x, 1);
+}
+
+inline void search_from(const std::vector<std::pair<int, int>>& path) {
+    std::bitset<total_bits> mask;
+    for (const auto& p : path) {
+        mask |= vertex_masks[p.first][p.second];
     }
+    std::vector<std::pair<int, int>> local_path = path;
+    local_path.reserve(MAX_LEN + 1);
+    dfs(mask, local_path);
 }
 
-inline void search_from(const std::pair<int, int>& start) {
-    std::vector<std::pair<int, int>> path;
-    std::bitset<total_bits> mask = vertex_masks[start.first][start.second];
-    path.reserve(MAX_LEN + 1);
-    path.push_back(start);
-    force_obvious_moves(mask, path);
-    dfs(mask, path);
-}
-
-inline void run_parallel_search(const std::vector<std::pair<int, int>>& starts) {
+inline void run_parallel_search(const std::vector<std::vector<std::pair<int, int>>>& paths) {
     const int hw_concurrency = static_cast<int>(std::thread::hardware_concurrency());
-    const int num_threads = starts.empty() ? 0 : std::clamp(hw_concurrency, 1, static_cast<int>(starts.size()));
+    const int num_threads = paths.empty() ? 0 : std::clamp(hw_concurrency, 1, static_cast<int>(paths.size()));
     std::vector<std::jthread> threads;
     threads.reserve(num_threads);
     for (int i = 0; i < num_threads; ++i) {
-        threads.emplace_back([i, num_threads, &starts] {
-            for (int j = i; j < static_cast<int>(starts.size()); j += num_threads) {
-                search_from(starts[j]);
+        threads.emplace_back([i, num_threads, &paths] {
+            for (int j = i; j < static_cast<int>(paths.size()); j += num_threads) {
+                search_from(paths[j]);
             }
         });
     }
 }
 
 int main() {
+    std::vector<std::vector<std::pair<int, int>>> paths;
     constexpr int max_x = (n < 3) ? 1 : n / 2;
-    std::vector<std::pair<int, int>> starts;
     for (int x = 1; x <= max_x; ++x) {
         for (int y = 1; y <= x; ++y) {
-            if (n < 4 || !(x == max_x && y == max_x))
-                starts.emplace_back(x, y);
+            if ((n > 3 && x == max_x && y == max_x) || (x == 2 && y == 2)) continue;
+
+            paths.emplace_back();
+            paths.back().reserve(MAX_LEN + 1);
+            paths.back().push_back({x, y});
         }
     }
-
-    run_parallel_search(starts);
+    
+    force_obvious_moves(paths);
+    run_parallel_search(paths);
+    
     if (!found) {
         std::cout << "No solution found.";
     }
