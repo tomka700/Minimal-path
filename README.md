@@ -42,7 +42,7 @@ g++ -std=c++2b -Ofast -march=native -flto path.cpp -o path
 
 - This program only tests `(1, 1)` and `(1, 0)` moves
 - Chebysev distance is used as $\frac{3}{1} > \frac{2}{1}$, just like $\frac{3}{\sqrt2} > \frac{2}{1}$ and it is faster
-- All moves of optimal solutions for 3 < n < 8 are zero waste, this is enforced as a general rule, see `added.count()`
+- All moves of optimal solutions for `3 < n < 8` are zero waste, this is enforced as a general rule, see `added.count()`
 - The starting positions are an 8th of the inner $(n - 2)(n - 2)$ square minus the middle 1 or 4 vertices for `n > 3`
   - there are $\frac{n\left(\frac{n}{2}+1\right)}{2} - 1$ (floordivs) many of them
 - `n = 8, 9` are good for testing as they run in human time
