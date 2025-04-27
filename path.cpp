@@ -10,7 +10,34 @@
 #include <bitset>
 
 #define n 8
-#define MAX_LEN 25
+#define ONLY_PROVE_LENGTH false
+
+#if n < 1
+    #error "n must be positive!"
+#endif
+
+constexpr int calculate_best_len() {
+    switch (n) {
+    case 1:
+    case 2:
+        return 0;
+    case 3:
+        return 3;
+    case 4:
+        return 6;
+    }
+
+    switch (n % 3) {
+    case 0:
+        return (2 * n - 2) + (n * (n - 4)) / 3;
+    case 1:
+        return (2 * n - 2 + 3) + (n * (n - 4) - 6) / 3;
+    case 2:
+        return (2 * n - 2 + 1) + (n * (n - 4) - 2) / 3;
+    }
+}
+constexpr int BEST_LEN = calculate_best_len();
+constexpr int MAX_LEN = ONLY_PROVE_LENGTH ? (BEST_LEN - 1) : BEST_LEN;
 
 constexpr int total_bits = n * n;
 
@@ -178,6 +205,9 @@ int main() {
     run_parallel_search(paths);
     
     if (!found) {
+        if (ONLY_PROVE_LENGTH) {
+            std::cout << "The optimal path length for n = " << n << " is at least " << BEST_LEN << ".\n";
+        }
         std::cout << "No solution found.";
     }
     /*
