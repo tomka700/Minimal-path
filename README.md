@@ -27,10 +27,10 @@
 ---
 
 ### Running
-- Close everything else that would waste CPU resources
 - Set `n`
-- Set `MAX_LEN` to the `Current Best`
-  - Set it to `Current Best - 1` if you only wish to prove that the `Current Best` is optimal
+  - Close everything else that would waste CPU resources if `n > 8`
+- Set `ONLY_PROVE_LENGTH` to `true` if you only wish to prove that the `Current Best` is optimal
+  - This option is exponentially faster, but it probably won't print any paths
 ```ps
 g++ -std=c++2b -Ofast -march=native -flto path.cpp -o path
 ```
@@ -40,7 +40,7 @@ g++ -std=c++2b -Ofast -march=native -flto path.cpp -o path
 
 ### Notes
 
-- This code only tests `(1, 1)` and `(1, 0)` moves
+- This program only tests `(1, 1)` and `(1, 0)` moves
 - Chebysev distance is used as $\frac{3}{1} > \frac{2}{1}$, just like $\frac{3}{\sqrt2} > \frac{2}{1}$ and it is faster
 - All moves of optimal solutions for 3 < n < 8 are zero waste, this is enforced as a general rule, see `added.count()`
 - The starting positions are an 8th of the inner $(n - 2)(n - 2)$ square minus the middle 1 or 4 vertices for `n > 3`
