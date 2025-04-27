@@ -16,7 +16,7 @@
     #error "n must be positive!"
 #endif
 
-constexpr int calculate_best_len() {
+constexpr int calculate_current_best() {
     switch (n) {
     case 1:
     case 2:
@@ -36,10 +36,10 @@ constexpr int calculate_best_len() {
         return (2 * n - 2 + 1) + (n * (n - 4) - 2) / 3;
     }
 }
-constexpr int BEST_LEN = calculate_best_len();
-constexpr int MAX_LEN = std::max(0, ONLY_PROVE_LENGTH ? BEST_LEN - 1 : BEST_LEN);
+constexpr int CURRENT_BEST = calculate_current_best();
+constexpr int MAX_LEN = std::max(0, ONLY_PROVE_LENGTH ? CURRENT_BEST - 1 : CURRENT_BEST);
 
-constexpr int total_bits = n * n;
+constexpr int TOTAL_BITS = n * n;
 
 struct Dir {
     int dx;
@@ -58,13 +58,13 @@ constexpr Dir dirs[8] = {
     {-1, 0, 2}
 };
 // matrix of bitmasks that are only true for every vertex's surrounding squares
-using MaskType = std::array<std::array<std::bitset<total_bits>, n+1>, n+1>;
+using MaskType = std::array<std::array<std::bitset<TOTAL_BITS>, n+1>, n+1>;
 
 constexpr MaskType create_vertex_masks() {
     MaskType masks;
     for (int x = 0; x <= n; ++x) {
         for (int y = 0; y <= n; ++y) {
-            std::bitset<total_bits> mask;
+            std::bitset<TOTAL_BITS> mask;
             if (x > 0 && y > 0) mask.set((x-1) * n + (y-1));
             if (x > 0 && y < n) mask.set((x-1) * n + y);
             if (x < n && y > 0) mask.set(x * n + (y-1));
@@ -92,17 +92,17 @@ std::atomic<int> global_best = MAX_LEN;
 std::atomic<bool> found = false;
 std::mutex global_mutex;
 /*
-bool are_zeros_connected(std::bitset<total_bits>& mask) {
+bool are_zeros_connected(std::bitset<TOTAL_BITS>& mask) {
     return false
 }
 */
-inline void dfs(std::bitset<total_bits>& mask, std::vector<std::pair<int, int>>& path) {
+inline void dfs(std::bitset<TOTAL_BITS>& mask, std::vector<std::pair<int, int>>& path) {
     const int len = path.size() - 1;
     const int count = mask.count();
     const int current_best = global_best.load(std::memory_order_relaxed);
-    if (len + (total_bits - count + 2) / 3 > current_best) [[likely]] return;
+    if (len + (TOTAL_BITS - count + 2) / 3 > current_best) [[likely]] return;
 
-    if (count == total_bits) [[unlikely]] {
+    if (count == TOTAL_BITS) [[unlikely]] {
         // permissive in order to print all optimal solutions
         if (len <= current_best) [[unlikely]] {
             std::lock_guard<std::mutex> lock(global_mutex);
@@ -165,7 +165,7 @@ inline void force_obvious_moves(std::vector<std::vector<std::pair<int, int>>>& p
 }
 
 inline void search_from(const std::vector<std::pair<int, int>>& path) {
-    std::bitset<total_bits> mask;
+    std::bitset<TOTAL_BITS> mask;
     for (const auto& p : path) {
         mask |= vertex_masks[p.first][p.second];
     }
