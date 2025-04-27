@@ -53,6 +53,8 @@ g++ -std=c++2b -Ofast -march=native -flto path.cpp -o path
 - prune starting dirs by symmetry
 - constexpr calculate all forced starting path sections and start threads from there
 - explain obvious moves in `force_obvious_moves`
+- savestate and continue?
+- early exit in case of too large `n`
 
 ---
 
