@@ -37,7 +37,7 @@ constexpr int calculate_best_len() {
     }
 }
 constexpr int BEST_LEN = calculate_best_len();
-constexpr int MAX_LEN = ONLY_PROVE_LENGTH ? (BEST_LEN - 1) : BEST_LEN;
+constexpr int MAX_LEN = std::max(0, ONLY_PROVE_LENGTH ? BEST_LEN - 1 : BEST_LEN);
 
 constexpr int total_bits = n * n;
 
