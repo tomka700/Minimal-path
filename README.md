@@ -67,9 +67,9 @@ g++ -std=c++2b -Ofast -march=native -flto path.cpp -o path
 - checking whether or not the remaining 0s are connected
   - bfs is slower for `n < 10` and thus hard to test
 - only checking 5 `dir`s instead of 8 based on the last `dir`
-  - unlikely due to the above note on vertex_masks
+  - unlikely due to coordinate calculations being slow
 - using a sliding window instead of the entirety of `vertex_masks`?
-  - unlikely due to the above note
+  - unlikely due to coordinate calculations being slow
   <br><br>
 - using `constexpr` more?
 - better compile flags?
