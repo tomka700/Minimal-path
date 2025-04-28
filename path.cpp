@@ -190,7 +190,7 @@ inline void run_parallel_search(const std::vector<std::vector<std::pair<int, int
 
 int main() {
     std::vector<std::vector<std::pair<int, int>>> paths;
-    constexpr int max_x = (n < 3) ? 1 : n / 2;
+    constexpr int max_x = std::max(1, n / 2);
     for (int x = 1; x <= max_x; ++x) {
         for (int y = 1; y <= x; ++y) {
             if ((n > 3 && x == max_x && y == max_x) || (x == 2 && y == 2)) continue;
