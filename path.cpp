@@ -16,6 +16,8 @@
     #error "n must be positive!"
 #endif
 
+constexpr int TOTAL_BITS = n * n;
+
 constexpr int calculate_current_best() {
     switch (n) {
     case 1:
@@ -39,15 +41,13 @@ constexpr int calculate_current_best() {
 constexpr int CURRENT_BEST = calculate_current_best();
 constexpr int MAX_LEN = std::max(0, ONLY_PROVE_LENGTH ? CURRENT_BEST - 1 : CURRENT_BEST);
 
-constexpr int TOTAL_BITS = n * n;
-
 struct Dir {
     int dx;
     int dy;
     int max_added;
 };
 
-constexpr Dir dirs[8] = {
+constexpr Dir DIRS[8] = {
     {-1, 1, 3},
     {-1, -1, 3},
     {1, -1, 3},
@@ -74,7 +74,7 @@ constexpr MaskType create_vertex_masks() {
     }
     return masks;
 }
-constexpr auto vertex_masks = create_vertex_masks();
+constexpr auto VERTEX_MASKS = create_vertex_masks();
 
 constexpr std::array<std::array<bool, n+1>, n+1> create_is_outer() {
     std::array<std::array<bool, n+1>, n+1> is_outer;
@@ -86,7 +86,7 @@ constexpr std::array<std::array<bool, n+1>, n+1> create_is_outer() {
     }
     return is_outer;
 }
-constexpr auto is_outer = create_is_outer();
+constexpr auto IS_OUTER = create_is_outer();
 
 std::atomic<int> global_best = MAX_LEN;
 std::atomic<bool> found = false;
@@ -99,12 +99,12 @@ bool are_zeros_connected(std::bitset<TOTAL_BITS>& mask) {
 inline void dfs(std::bitset<TOTAL_BITS>& mask, std::vector<std::pair<int, int>>& path) {
     const int len = path.size() - 1;
     const int count = mask.count();
-    const int current_best = global_best.load(std::memory_order_relaxed);
-    if (len + (TOTAL_BITS - count + 2) / 3 > current_best) [[likely]] return;
+    const int best_len = global_best.load(std::memory_order_relaxed);
+    if (len + (TOTAL_BITS - count + 2) / 3 > best_len) [[likely]] return;
 
     if (count == TOTAL_BITS) [[unlikely]] {
         // permissive in order to print all optimal solutions
-        if (len <= current_best) [[unlikely]] {
+        if (len <= best_len) [[unlikely]] {
             std::lock_guard<std::mutex> lock(global_mutex);
             if (len <= global_best) {
                 found = true;
@@ -120,16 +120,16 @@ inline void dfs(std::bitset<TOTAL_BITS>& mask, std::vector<std::pair<int, int>>&
     }
     const auto& [x, y] = path.back();
     const auto& invmask = ~mask;
-    for (const auto& dir : dirs) {
+    for (const auto& dir : DIRS) {
         const int nx = x + dir.dx;
         const int ny = y + dir.dy;
-        if (is_outer[nx][ny]) [[unlikely]] continue;
+        if (IS_OUTER[nx][ny]) [[unlikely]] continue;
 
-        auto added = vertex_masks[nx][ny] & invmask;
+        auto added = VERTEX_MASKS[nx][ny] & invmask;
         if (n != 3 ? static_cast<int>(added.count()) < dir.max_added : ((dir.dx != 0 && dir.dy != 0) || static_cast<int>(added.count()) == 0)) [[likely]] continue;
         
         path.push_back({nx, ny});
-        mask |= vertex_masks[nx][ny];
+        mask |= VERTEX_MASKS[nx][ny];
         dfs(mask, path);
         mask &= ~added;
         path.pop_back();
@@ -167,7 +167,7 @@ inline void force_obvious_moves(std::vector<std::vector<std::pair<int, int>>>& p
 inline void search_from(const std::vector<std::pair<int, int>>& path) {
     std::bitset<TOTAL_BITS> mask;
     for (const auto& p : path) {
-        mask |= vertex_masks[p.first][p.second];
+        mask |= VERTEX_MASKS[p.first][p.second];
     }
     std::vector<std::pair<int, int>> local_path = path;
     local_path.reserve(MAX_LEN + 1);
@@ -190,11 +190,10 @@ inline void run_parallel_search(const std::vector<std::vector<std::pair<int, int
 
 int main() {
     std::vector<std::vector<std::pair<int, int>>> paths;
-    constexpr int max_x = std::max(1, n / 2);
-    for (int x = 1; x <= max_x; ++x) {
+    constexpr int MAX_X = std::max(1, n / 2);
+    for (int x = 1; x <= MAX_X; ++x) {
         for (int y = 1; y <= x; ++y) {
-            if ((n > 3 && x == max_x && y == max_x) || (x == 2 && y == 2)) continue;
-
+            if ((n > 3 && x == MAX_X && y == MAX_X) || (x == 2 && y == 2)) continue;
             paths.emplace_back();
             paths.back().reserve(MAX_LEN + 1);
             paths.back().push_back({x, y});
