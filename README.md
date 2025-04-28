@@ -28,7 +28,7 @@
 
 ### Running
 - Set `n`
-  - Close everything else that would waste CPU resources if `n > 8`
+  - Close everything else that would waste CPU resources for `n > 9`
 - Set `ONLY_PROVE_LENGTH` to `true` if you only wish to prove that the `Current Best` is optimal
   - This option is exponentially faster, but it probably won't print any paths
 ```ps
