@@ -8,13 +8,12 @@
 #include <algorithm>
 #include <array>
 #include <bitset>
+#include <cassert>
 
 #define n 8
 #define ONLY_PROVE_LENGTH false
 
-#if n < 1
-    #error "n must be positive!"
-#endif
+static_assert(n > 0, "n must be positive!");
 
 constexpr int TOTAL_BITS = n * n;
 
@@ -171,8 +170,10 @@ inline void search_from(const std::vector<std::pair<int, int>>& path) {
 }
 
 inline void run_parallel_search(const std::vector<std::vector<std::pair<int, int>>>& paths) {
+    assert(!paths.empty() && "paths must not be empty!");
     const int hw_concurrency = static_cast<int>(std::thread::hardware_concurrency());
-    const int num_threads = paths.empty() ? 0 : std::clamp(hw_concurrency, 1, static_cast<int>(paths.size()));
+    assert(hw_concurrency > 0 && "No supported threads!");
+    const int num_threads = std::min(hw_concurrency, static_cast<int>(paths.size()));
     std::vector<std::jthread> threads;
     threads.reserve(num_threads);
     for (int i = 0; i < num_threads; ++i) {
