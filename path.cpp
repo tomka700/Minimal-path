@@ -205,7 +205,7 @@ int main() {
     
     if (!found) {
         if (ONLY_PROVE_LENGTH) {
-            std::cout << "The optimal path length for n = " << n << " is at least " << BEST_LEN << ".\n";
+            std::cout << "The optimal path length for n = " << n << " is at least " << CURRENT_BEST << ".\n";
         }
         std::cout << "No solution found.";
     }
