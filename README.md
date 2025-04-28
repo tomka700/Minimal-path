@@ -50,7 +50,6 @@ g++ -std=c++2b -Ofast -march=native -flto path.cpp -o path
 ---
 
 ### Todo
-- rename `current_best` to disambiguate
 - prune starting dirs by symmetry
 - constexpr calculate all forced starting path sections and start threads from there
 - explain obvious moves in `force_obvious_moves`
