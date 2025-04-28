@@ -91,11 +91,7 @@ constexpr auto IS_OUTER = create_is_outer();
 std::atomic<int> global_best = MAX_LEN;
 std::atomic<bool> found = false;
 std::mutex global_mutex;
-/*
-bool are_zeros_connected(std::bitset<TOTAL_BITS>& mask) {
-    return false
-}
-*/
+
 inline void dfs(std::bitset<TOTAL_BITS>& mask, std::vector<std::pair<int, int>>& path) {
     const int len = path.size() - 1;
     const int count = mask.count();
