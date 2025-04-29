@@ -50,6 +50,7 @@ g++ -std=c++2b -Ofast -march=native -flto path.cpp -o path
 ---
 
 ### Todo
+- force paths in `dfs` defined in `force_obvious_moves` to stay at least as long as they originally were
 - prune starting dirs by symmetry
 - constexpr calculate all forced starting path sections and start threads from there
 - explain obvious moves in `force_obvious_moves`
