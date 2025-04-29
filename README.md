@@ -68,7 +68,7 @@ g++ -std=c++2b -Ofast -march=native -flto path.cpp -o path
   - bfs is slower for `n < 10` and thus hard to test
 - only checking 5 `dir`s instead of 8 based on the last `dir`
   - unlikely due to coordinate calculations being slow
-- using a sliding window instead of the entirety of `vertex_masks`?
+- using a sliding window instead of the entirety of `VERTEX_MASKS`?
   - unlikely due to coordinate calculations being slow
   <br><br>
 - using `constexpr` more?
