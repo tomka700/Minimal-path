@@ -39,7 +39,7 @@ g++ -std=c++2b -Ofast -march=native -flto path.cpp -o path
 ---
 
 ### Notes
-
+- The formulas used for `Current Best` in the code are explained here: https://math.stackexchange.com/q/5036847
 - This program only tests `(1, 1)` and `(1, 0)` moves
 - Chebysev distance is used as $\frac{3}{1} > \frac{2}{1}$, just like $\frac{3}{\sqrt2} > \frac{2}{1}$ and it is faster
 - All moves of optimal solutions for `3 < n < 8` are zero waste, this is enforced as a general rule, see `added.count()`
@@ -60,7 +60,6 @@ g++ -std=c++2b -Ofast -march=native -flto path.cpp -o path
 ---
 
 ### Possible Optimizations
-
 - better branch prediction
   - current was tested at `n = 8`
 - making use of more / better built-ins?
