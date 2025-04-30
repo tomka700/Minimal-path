@@ -56,6 +56,7 @@ g++ -std=c++2b -Ofast -march=native -flto path.cpp -o path
 - explain obvious moves in `force_obvious_moves`
 - savestate and continue?
 - early exit in case of too large `n`
+- think about how the problem could be converted into a single graph problem
 
 ---
 
