@@ -10,8 +10,8 @@
 #include <bitset>
 #include <cassert>
 
-#define n 8
-#define ONLY_PROVE_LENGTH false
+constexpr int n = 8;
+constexpr bool ONLY_PROVE_LENGTH = false;
 
 static_assert(n > 0, "n must be positive!");
 
@@ -91,7 +91,7 @@ std::atomic<int> global_best = MAX_LEN;
 std::atomic<bool> found = false;
 std::mutex global_mutex;
 
-inline void dfs(std::bitset<TOTAL_BITS>& mask, std::vector<std::pair<int, int>>& path) {
+void dfs(std::bitset<TOTAL_BITS>& mask, std::vector<std::pair<int, int>>& path) {
     const int len = path.size() - 1;
     const int count = mask.count();
     const int best_len = global_best.load(std::memory_order_relaxed);
@@ -131,7 +131,7 @@ inline void dfs(std::bitset<TOTAL_BITS>& mask, std::vector<std::pair<int, int>>&
     }
 }
 
-inline void force_obvious_moves(std::vector<std::vector<std::pair<int, int>>>& paths) {
+void force_obvious_moves(std::vector<std::vector<std::pair<int, int>>>& paths) {
     if (n < 3) return;
 
     for (auto& path : paths) {
@@ -159,7 +159,7 @@ inline void force_obvious_moves(std::vector<std::vector<std::pair<int, int>>>& p
     }
 }
 
-inline void search_from(const std::vector<std::pair<int, int>>& path) {
+void search_from(const std::vector<std::pair<int, int>>& path) {
     std::bitset<TOTAL_BITS> mask;
     for (const auto& p : path) {
         mask |= VERTEX_MASKS[p.first][p.second];
@@ -169,7 +169,7 @@ inline void search_from(const std::vector<std::pair<int, int>>& path) {
     dfs(mask, local_path);
 }
 
-inline void run_parallel_search(const std::vector<std::vector<std::pair<int, int>>>& paths) {
+void run_parallel_search(const std::vector<std::vector<std::pair<int, int>>>& paths) {
     assert(!paths.empty() && "paths must not be empty!");
     const int hw_concurrency = static_cast<int>(std::thread::hardware_concurrency());
     assert(hw_concurrency > 0 && "No supported threads!");
