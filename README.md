@@ -32,7 +32,7 @@
 - Set `ONLY_PROVE_LENGTH` to `true` if you only wish to prove that the `Current Best` is optimal
   - This option is exponentially faster, but it probably won't print any paths
 ```ps
-g++ -std=c++2b -Ofast -march=native -flto path.cpp -o path
+g++ -std=c++2b -O3 -march=native -flto path.cpp -o path
 ```
 **Disclaimer:** `n = 10` takes days to run, anything beyond that has yet to produce an optimal output
 
