@@ -212,7 +212,7 @@ int main() {
     for (int i = 0; i < runs; ++i) {
         auto start_time = std::chrono::high_resolution_clock::now();
         {
-            run_parallel_search(starts);
+            run_parallel_search(paths);
             global_best = MAX_LEN;
         }
         auto end_time = std::chrono::high_resolution_clock::now();
