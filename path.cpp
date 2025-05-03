@@ -219,7 +219,7 @@ void search_from(std::vector<std::pair<int, int>> path) {
     for (const auto& p : path) {
         mask |= VERTEX_MASKS[p.first][p.second];
     }
-
+    // force paths to stay at least as long as the input
     MaskMatrix local_vertex_masks;
     for (int x = 0; x <= n; ++x) {
         for (int y = 0; y <= n; ++y) {
