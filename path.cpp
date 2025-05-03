@@ -167,7 +167,7 @@ void force_obvious_moves(std::vector<std::vector<std::pair<int, int>>>& paths) {
         }
     }
 }
-
+// two layers of dfs unrolled
 void try_branch(std::vector<std::vector<std::pair<int, int>>>& paths) {
     if (n < 8) return;
 
