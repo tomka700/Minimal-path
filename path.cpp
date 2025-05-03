@@ -57,10 +57,10 @@ constexpr Dir DIRS[8] = {
     {-1, 0, 2}
 };
 // matrix of bitmasks that are only true for every vertex's surrounding squares
-using MaskType = std::array<std::array<std::bitset<TOTAL_BITS>, n+1>, n+1>;
+using MaskMatrix = std::array<std::array<std::bitset<TOTAL_BITS>, n+1>, n+1>;
 
-constexpr MaskType create_vertex_masks() {
-    MaskType masks;
+constexpr MaskMatrix create_vertex_masks() {
+    MaskMatrix masks;
     for (int x = 0; x <= n; ++x) {
         for (int y = 0; y <= n; ++y) {
             std::bitset<TOTAL_BITS> mask;
@@ -91,7 +91,7 @@ std::atomic<int> global_best = MAX_LEN;
 std::atomic<bool> found = false;
 std::mutex global_mutex;
 
-void dfs(std::bitset<TOTAL_BITS>& mask, std::vector<std::pair<int, int>>& path) {
+void dfs(std::bitset<TOTAL_BITS> mask, std::vector<std::pair<int, int>>& path, MaskMatrix& local_vertex_masks) {
     const int len = path.size() - 1;
     const int count = mask.count();
     const int best_len = global_best.load(std::memory_order_relaxed);
@@ -113,61 +113,120 @@ void dfs(std::bitset<TOTAL_BITS>& mask, std::vector<std::pair<int, int>>& path) 
         }
         return;
     }
-    const auto& [x, y] = path.back();
-    const auto& invmask = ~mask;
+
+    const auto [x, y] = path.back();
+    const auto invmask = ~mask;
     for (const auto& dir : DIRS) {
         const int nx = x + dir.dx;
         const int ny = y + dir.dy;
         if (IS_OUTER[nx][ny]) [[unlikely]] continue;
 
-        auto added = VERTEX_MASKS[nx][ny] & invmask;
+        auto added = local_vertex_masks[nx][ny] & invmask;
         if (n != 3 && static_cast<int>(added.count()) < dir.max_added) [[likely]] continue;
         if (n == 3 && dir.dx != 0 && dir.dy != 0) continue;
         
         path.push_back({nx, ny});
-        mask |= VERTEX_MASKS[nx][ny];
-        dfs(mask, path);
+        mask |= added;
+        dfs(mask, path, local_vertex_masks);
         mask &= ~added;
         path.pop_back();
     }
 }
 
 void force_obvious_moves(std::vector<std::vector<std::pair<int, int>>>& paths) {
-    if (n < 3) return;
+    if (n < 5) return;
 
-    for (auto& path : paths) {
-        auto& [x, y] = path.back();
+    std::vector<std::pair<int, int>> starts;
+    switch (n / 2) {
+    case 5:
+        paths.push_back({{5, 1}, {4, 1}, {3, 2}, {2, 1}, {1, 1}, {1, 2}});
+        paths.push_back({{3, 1}, {2, 1}, {1, 1}, {1, 2}, {2, 3}});
+        paths.push_back({{3, 1}, {2, 1}, {1, 1}, {1, 2}, {1, 3}});
+        starts.push_back({5, 1});
+        starts.push_back({3, 1});
+    case 4:
+    case 3:
+        paths.push_back({{2, 1}, {1, 1}, {1, 2}, {2, 3}});
+        paths.push_back({{2, 1}, {1, 1}, {1, 2}, {1, 3}});
+        paths.push_back({{1, 1}, {1, 2}, {2, 2}, {3, 1}});
+        starts.push_back({2, 1});
+    case 2:
+        paths.push_back({{1, 1}, {1, 2}, {1, 3}});
+        starts.push_back({1, 1});
+    }
+    if (n < 11) return;
 
-        auto step = [&](int nx, int ny) {
-            path.push_back({nx, ny});
-        };
-
-        switch (y) {
-        case 2:
-            step(x, 1);
-        case 1:
-            switch (x) {
-            case 4:
-                step(3, 2);
-            case 3:
-                step(2, 1);
-            case 2:
-                step(1, 1);
-            case 1:
-                step(1, 2);
-            }
+    constexpr int MAX_X = std::max(1, n / 2);
+    for (int x = 1; x <= MAX_X; ++x) {
+        for (int y = 1; y <= x; ++y) {
+            if ((n > 3 && x == MAX_X && y == MAX_X) || (x == 2 && y == 2)) continue;
+            if (std::find(starts.begin(), starts.end(), std::make_pair(x, y)) != starts.end()) continue;
+            paths.emplace_back();
+            paths.back().reserve(MAX_LEN + 1);
+            paths.back().push_back({x, y});
         }
     }
 }
 
-void search_from(const std::vector<std::pair<int, int>>& path) {
+void try_branch(std::vector<std::vector<std::pair<int, int>>>& paths) {
+    if (n < 8) return;
+
+    std::vector<std::vector<std::pair<int, int>>> new_paths;
+    while (!paths.empty()) {
+        const auto path = paths.back();
+        paths.pop_back();
+
+        std::bitset<TOTAL_BITS> mask;
+        for (const auto& p : path) {
+            mask |= VERTEX_MASKS[p.first][p.second];
+        }
+
+        const auto [x, y] = path.back();
+        const auto invmask = ~mask;
+        for (const auto& dir : DIRS) {
+            const int nx = x + dir.dx;
+            const int ny = y + dir.dy;
+            if (IS_OUTER[nx][ny]) continue;
+
+            const auto added = VERTEX_MASKS[nx][ny] & invmask;
+            if (static_cast<int>(added.count()) < dir.max_added) continue;
+
+            std::vector<std::pair<int, int>> new_path = path;
+            new_path.reserve(MAX_LEN + 1);
+            new_path.push_back({nx, ny});
+
+            const auto invmask2 = ~(mask | VERTEX_MASKS[nx][ny]);
+            for (const auto& dir2 : DIRS) {
+                const int nx2 = nx + dir2.dx;
+                const int ny2 = ny + dir2.dy;
+                if (IS_OUTER[nx2][ny2]) continue;
+
+                const auto added2 = VERTEX_MASKS[nx2][ny2] & invmask2;
+                if (static_cast<int>(added2.count()) < dir2.max_added) continue;
+
+                new_path.push_back({nx2, ny2});
+                new_paths.push_back(new_path);
+                new_path.pop_back();
+            }
+            new_path.pop_back();
+        }
+    }
+    paths = new_paths;
+}
+
+void search_from(std::vector<std::pair<int, int>> path) {
     std::bitset<TOTAL_BITS> mask;
     for (const auto& p : path) {
         mask |= VERTEX_MASKS[p.first][p.second];
     }
-    std::vector<std::pair<int, int>> local_path = path;
-    local_path.reserve(MAX_LEN + 1);
-    dfs(mask, local_path);
+
+    MaskMatrix local_vertex_masks;
+    for (int x = 0; x <= n; ++x) {
+        for (int y = 0; y <= n; ++y) {
+            local_vertex_masks[x][y] = VERTEX_MASKS[x][y] | mask;
+        }
+    }
+    dfs(mask, path, local_vertex_masks);
 }
 
 void run_parallel_search(const std::vector<std::vector<std::pair<int, int>>>& paths) {
@@ -188,17 +247,8 @@ void run_parallel_search(const std::vector<std::vector<std::pair<int, int>>>& pa
 
 int main() {
     std::vector<std::vector<std::pair<int, int>>> paths;
-    constexpr int MAX_X = std::max(1, n / 2);
-    for (int x = 1; x <= MAX_X; ++x) {
-        for (int y = 1; y <= x; ++y) {
-            if ((n > 3 && x == MAX_X && y == MAX_X) || (x == 2 && y == 2)) continue;
-            paths.emplace_back();
-            paths.back().reserve(MAX_LEN + 1);
-            paths.back().push_back({x, y});
-        }
-    }
-    
     force_obvious_moves(paths);
+    try_branch(paths);
     run_parallel_search(paths);
     
     if (!found) {
