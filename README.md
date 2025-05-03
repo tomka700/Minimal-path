@@ -52,11 +52,9 @@ g++ -std=c++2b -O3 -march=native -flto path.cpp -o path
 ### Todo
 - reuse smaller solutions for the same `n mod 3`
 - prune starting dirs by symmetry
-- constexpr `force_obvious_moves` with an array with a formula for the amount of starts
 - explain obvious moves in `force_obvious_moves`
 - savestate and continue?
 - early exit in case of too large `n`
-- think about how the problem could be converted into a single graph problem
 
 ---
 
@@ -73,7 +71,6 @@ g++ -std=c++2b -O3 -march=native -flto path.cpp -o path
   - unlikely due to coordinate calculations being slow
   <br><br>
 - using `constexpr` more?
-- better compile flags?
 - better max update logic?
 - better multithreading?
 - better ...
