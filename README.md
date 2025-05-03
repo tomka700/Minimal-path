@@ -50,8 +50,7 @@ g++ -std=c++2b -O3 -march=native -flto path.cpp -o path
 ---
 
 ### Todo
-- Reuse smaller solutions for the same `n mod 3`
-- force paths in `dfs` defined in `force_obvious_moves` to stay at least as long as they originally were
+- reuse smaller solutions for the same `n mod 3`
 - prune starting dirs by symmetry
 - constexpr `force_obvious_moves` with an array with a formula for the amount of starts
 - explain obvious moves in `force_obvious_moves`
