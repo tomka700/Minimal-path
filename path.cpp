@@ -155,7 +155,7 @@ void force_obvious_moves(std::vector<std::vector<std::pair<int, int>>>& paths) {
         starts.push_back({1, 1});
     }
     if (n < 11) return;
-
+    // add in the non-obvious starting positions
     constexpr int MAX_X = std::max(1, n / 2);
     for (int x = 1; x <= MAX_X; ++x) {
         for (int y = 1; y <= x; ++y) {
