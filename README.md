@@ -62,8 +62,6 @@ g++ -std=c++2b -O3 -march=native -flto path.cpp -o path
 ---
 
 ### Possible Optimizations
-- better branch prediction
-  - current was tested at `n = 8`
 - making use of more / better built-ins?
   <br><br>
 - checking whether or not the remaining 0s are connected
