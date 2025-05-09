@@ -259,12 +259,16 @@ int main() {
     }
     /*
     long long total_runtime = 0;
-    int runs = 5;
+    int runs = 10;
     for (int i = 0; i < runs; ++i) {
         auto start_time = std::chrono::high_resolution_clock::now();
         {
-            run_parallel_search(paths);
+            std::vector<std::vector<std::pair<int, int>>> paths;
             global_best = MAX_LEN;
+            found = false;
+            force_obvious_moves(paths);
+            try_branch(paths);
+            run_parallel_search(paths);
         }
         auto end_time = std::chrono::high_resolution_clock::now();
         total_runtime += std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
