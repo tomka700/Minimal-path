@@ -52,6 +52,8 @@ g++ -std=c++2b -O3 -march=native -flto path.cpp -o path
 ---
 
 ### Todo
+- add brute-force option for already proven `n`
+- use arrays where possible
 - reuse smaller solutions for the same `n mod 3`
 - add in all "non-obvious starting positions", then filter instead
 - prune starting dirs by symmetry
