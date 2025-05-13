@@ -134,7 +134,10 @@ void dfs(std::bitset<TOTAL_BITS> mask, std::vector<std::pair<int, int>>& path, M
 }
 
 void force_obvious_moves(std::vector<std::vector<std::pair<int, int>>>& paths) {
-    if (n < 5) return;
+    if (n < 5) {
+        paths.push_back({{1, 1}});
+        return;
+    }
 
     std::vector<std::pair<int, int>> starts;
     switch (n / 2) {
