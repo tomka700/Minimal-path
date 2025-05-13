@@ -95,11 +95,11 @@ void dfs(std::bitset<TOTAL_BITS> mask, std::vector<std::pair<int, int>>& path, M
     const int len = path.size() - 1;
     const int count = mask.count();
     const int best_len = global_best.load(std::memory_order_relaxed);
-    if (len + (TOTAL_BITS - count + 2) / 3 > best_len) [[likely]] return;
+    if (len + (TOTAL_BITS - count + 2) / 3 > best_len) return;
 
-    if (count == TOTAL_BITS) [[unlikely]] {
+    if (count == TOTAL_BITS) {
         // permissive in order to print all optimal solutions
-        if (len <= best_len) [[unlikely]] {
+        if (len <= best_len) {
             std::lock_guard<std::mutex> lock(global_mutex);
             if (len <= global_best) {
                 found = true;
@@ -119,10 +119,10 @@ void dfs(std::bitset<TOTAL_BITS> mask, std::vector<std::pair<int, int>>& path, M
     for (const auto& dir : DIRS) {
         const int nx = x + dir.dx;
         const int ny = y + dir.dy;
-        if (IS_OUTER[nx][ny]) [[unlikely]] continue;
+        if (IS_OUTER[nx][ny]) continue;
 
         auto added = local_vertex_masks[nx][ny] & invmask;
-        if (n != 3 && static_cast<int>(added.count()) < dir.max_added) [[likely]] continue;
+        if (n != 3 && static_cast<int>(added.count()) < dir.max_added) continue;
         if (n == 3 && dir.dx != 0 && dir.dy != 0) continue;
         
         path.push_back({nx, ny});
