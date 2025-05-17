@@ -43,7 +43,7 @@ g++ -std=c++2b -O3 -march=native -flto path.cpp -o path
 - This program only tests `(1, 1)` and `(1, 0)` moves
 - All moves of optimal solutions for `3 < n < 8` are zero waste, this is enforced as a general rule, see `added.count()`
 - Chebyshev distance is used as it is equivalent in the case of only using (1,1) and (1,0) moves and it is faster
-  - `n = 3` is the only special case, where this isn't sufficient because its optimal solutions are not zero waste
+  - `n = 3` is the only special case, where false positives would arise, they are filtered out manually
 - The starting positions are an 8th of the inner $(n - 2)(n - 2)$ square minus the middle 1 or 4 vertices for `n > 3`
   - there are $\frac{n\left(\frac{n}{2}+1\right)}{2} - 1$ (floordivs) many of them
   - `n < 11` isn't brute-forced for all of these, change the last `return` condition in `force_obvious_moves` for testing
