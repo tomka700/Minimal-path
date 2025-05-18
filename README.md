@@ -29,7 +29,7 @@
 ### Running
 - Set `n`
   - Close everything else that would waste CPU resources for `n > 9`
-- Set `ONLY_PROVE_LENGTH` to `true` if you only wish to prove that the `Current Best` is optimal
+- Set `ONLY_PROVE_LENGTH` to `true` if you only wish to prove that the current best `Length` is optimal
   - This option is exponentially faster, but it probably won't print any paths
 ```ps
 g++ -std=c++2b -O3 -march=native -flto path.cpp -o path
