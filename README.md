@@ -39,7 +39,7 @@ g++ -std=c++2b -O3 -march=native -flto path.cpp -o path
 ---
 
 ### Notes
-- The formulas used for `Current Best` in the code are explained here: https://math.stackexchange.com/q/5036847
+- The formulas used for `CURRENT_BEST` in the code are explained here: https://math.stackexchange.com/q/5036847
 - This program only tests `(1, 1)` and `(1, 0)` moves
 - All moves of optimal solutions for `3 < n < 8` are zero waste, this is enforced as a general rule, see `added.count()`
 - Chebyshev distance is used as it is equivalent in the case of only using (1,1) and (1,0) moves and it is faster
