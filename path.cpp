@@ -11,6 +11,7 @@
 #include <cassert>
 
 constexpr int n = 8;
+constexpr bool BRUTE_FORCE = false;
 constexpr bool ONLY_PROVE_LENGTH = false;
 
 static_assert(n > 0, "n must be positive!");
@@ -91,13 +92,12 @@ std::atomic<int> global_best = MAX_LEN + 1;
 std::atomic<bool> found = false;
 std::mutex global_mutex;
 
-void force_obvious_moves(std::vector<std::vector<std::pair<int, int>>>& paths) {
+void force_obvious_moves(std::vector<std::vector<std::pair<int, int>>>& paths, std::vector<std::pair<int, int>>& starts) {
     if (n < 5) {
         paths.push_back({{1, 1}});
         return;
     }
 
-    std::vector<std::pair<int, int>> starts;
     switch (n / 2) {
     case 5:
         paths.push_back({{5, 1}, {4, 1}, {3, 2}, {2, 1}, {1, 1}, {1, 2}});
@@ -115,8 +115,9 @@ void force_obvious_moves(std::vector<std::vector<std::pair<int, int>>>& paths) {
         paths.push_back({{1, 1}, {1, 2}, {1, 3}});
         starts.push_back({1, 1});
     }
-    if (n < 11) return;
-    // add in the non-obvious starting positions
+}
+
+void fill_starts(std::vector<std::vector<std::pair<int, int>>>& paths, std::vector<std::pair<int, int>>& starts) {
     constexpr int MAX_X = std::max(1, n / 2);
     for (int x = 1; x <= MAX_X; ++x) {
         for (int y = 1; y <= x; ++y) {
@@ -255,7 +256,9 @@ void run_parallel_search(const std::vector<std::vector<std::pair<int, int>>>& pa
 
 int main() {
     std::vector<std::vector<std::pair<int, int>>> paths;
-    force_obvious_moves(paths);
+    std::vector<std::pair<int, int>> starts;
+    if (!BRUTE_FORCE) force_obvious_moves(paths, starts);
+    fill_starts(paths, starts);
     try_branch(paths);
     run_parallel_search(paths);
     
