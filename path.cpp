@@ -87,51 +87,9 @@ constexpr std::array<std::array<bool, n+1>, n+1> create_is_outer() {
 }
 constexpr auto IS_OUTER = create_is_outer();
 
-std::atomic<int> global_best = MAX_LEN;
+std::atomic<int> global_best = MAX_LEN + 1;
 std::atomic<bool> found = false;
 std::mutex global_mutex;
-
-void dfs(std::bitset<TOTAL_BITS> mask, std::vector<std::pair<int, int>>& path, MaskMatrix& local_vertex_masks) {
-    const int len = path.size() - 1;
-    const int count = mask.count();
-    const int best_len = global_best.load(std::memory_order_relaxed);
-    if (len + (TOTAL_BITS - count + 2) / 3 > best_len) return;
-
-    if (count == TOTAL_BITS) {
-        // permissive in order to print all optimal solutions
-        if (len <= best_len) {
-            std::lock_guard<std::mutex> lock(global_mutex);
-            if (len <= global_best) {
-                found = true;
-                global_best = len;
-                std::cout << "New best: " << len << ", Path: ";
-                for (const auto& p : path) {
-                    std::cout << "(" << p.first << "," << p.second << ")";
-                }
-                std::cout << "\n";
-            }
-        }
-        return;
-    }
-
-    const auto [x, y] = path.back();
-    const auto invmask = ~mask;
-    for (const auto& dir : DIRS) {
-        const int nx = x + dir.dx;
-        const int ny = y + dir.dy;
-        if (IS_OUTER[nx][ny]) continue;
-
-        auto added = local_vertex_masks[nx][ny] & invmask;
-        if (n != 3 && static_cast<int>(added.count()) < dir.max_added) continue;
-        if (n == 3 && dir.dx != 0 && dir.dy != 0) continue;
-        
-        path.push_back({nx, ny});
-        mask |= added;
-        dfs(mask, path, local_vertex_masks);
-        mask &= ~added;
-        path.pop_back();
-    }
-}
 
 void force_obvious_moves(std::vector<std::vector<std::pair<int, int>>>& paths) {
     if (n < 5) {
@@ -217,19 +175,66 @@ void try_branch(std::vector<std::vector<std::pair<int, int>>>& paths) {
     paths = new_paths;
 }
 
+void dfs(std::bitset<TOTAL_BITS>& mask, std::array<std::pair<int, int>, MAX_LEN+1>& path, int len, const MaskMatrix& local_vertex_masks) {
+    int count = mask.count();
+    int best_len = global_best.load(std::memory_order_relaxed);
+    if (len - 1 + (TOTAL_BITS - count + 2) / 3 > best_len) return;
+
+    if (count == TOTAL_BITS) {
+        // permissive in order to print all optimal solutions
+        if (len <= best_len) {
+            std::lock_guard<std::mutex> lock(global_mutex);
+            if (len <= global_best) {
+                found = true;
+                global_best = len;
+                std::cout << "New best: " << len - 1 << ", Path: ";
+                for (int i = 0; i < len; ++i) {
+                    std::cout << "(" << path[i].first << "," << path[i].second << ")";
+                }
+                std::cout << "\n";
+            }
+        }
+        return;
+    }
+
+    auto [x, y] = path[len-1];
+    auto invmask = ~mask;
+    for (auto& dir : DIRS) {
+        int nx = x + dir.dx;
+        int ny = y + dir.dy;
+        if (IS_OUTER[nx][ny]) continue;
+
+        auto added = local_vertex_masks[nx][ny] & invmask;
+        if (n != 3 && added.count() < static_cast<size_t>(dir.max_added)) continue;
+        if (n == 3 && dir.dx != 0 && dir.dy != 0) continue;
+
+        path[len] = {nx, ny};
+        mask |= added;
+        dfs(mask, path, len+1, local_vertex_masks);
+        mask &= ~added;
+    }
+}
+
 void search_from(std::vector<std::pair<int, int>> path) {
     std::bitset<TOTAL_BITS> mask;
     for (const auto& p : path) {
         mask |= VERTEX_MASKS[p.first][p.second];
     }
-    // force paths to stay at least as long as the input
+
     MaskMatrix local_vertex_masks;
     for (int x = 0; x <= n; ++x) {
         for (int y = 0; y <= n; ++y) {
             local_vertex_masks[x][y] = VERTEX_MASKS[x][y] | mask;
         }
     }
-    dfs(mask, path, local_vertex_masks);
+
+    std::array<std::pair<int, int>, MAX_LEN+1> local_path;
+    int len = static_cast<int>(path.size());
+    for (int i = 0; i < len; ++i) {
+        local_path[i] = path[i];
+    }
+
+    dfs(mask, local_path, len, local_vertex_masks);
 }
 
 void run_parallel_search(const std::vector<std::vector<std::pair<int, int>>>& paths) {
