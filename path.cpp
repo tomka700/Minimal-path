@@ -88,7 +88,7 @@ constexpr std::array<std::array<bool, n+1>, n+1> create_is_outer() {
 }
 constexpr auto IS_OUTER = create_is_outer();
 
-std::atomic<int> global_best = MAX_LEN + 1;
+std::atomic<int> global_best = MAX_LEN;
 std::atomic<bool> found = false;
 std::mutex global_mutex;
 
@@ -179,7 +179,7 @@ void try_branch(std::vector<std::vector<std::pair<int, int>>>& paths) {
 void dfs(std::bitset<TOTAL_BITS>& mask, std::array<std::pair<int, int>, MAX_LEN+1>& path, int len, const MaskMatrix& local_vertex_masks) {
     int count = mask.count();
     int best_len = global_best.load(std::memory_order_relaxed);
-    if (len - 1 + (TOTAL_BITS - count + 2) / 3 > best_len) return;
+    if (len + (TOTAL_BITS - count + 2) / 3 > best_len) return;
 
     if (count == TOTAL_BITS) {
         // permissive in order to print all optimal solutions
@@ -188,7 +188,7 @@ void dfs(std::bitset<TOTAL_BITS>& mask, std::array<std::pair<int, int>, MAX_LEN+
             if (len <= global_best) {
                 found = true;
                 global_best = len;
-                std::cout << "New best: " << len - 1 << ", Path: ";
+                std::cout << "New best: " << len << ", Path: ";
                 for (int i = 0; i < len; ++i) {
                     std::cout << "(" << path[i].first << "," << path[i].second << ")";
                 }
@@ -198,7 +198,7 @@ void dfs(std::bitset<TOTAL_BITS>& mask, std::array<std::pair<int, int>, MAX_LEN+
         return;
     }
 
-    auto [x, y] = path[len-1];
+    auto [x, y] = path[len];
     auto invmask = ~mask;
     for (auto& dir : DIRS) {
         int nx = x + dir.dx;
@@ -209,9 +209,9 @@ void dfs(std::bitset<TOTAL_BITS>& mask, std::array<std::pair<int, int>, MAX_LEN+
         if (n != 3 && added.count() < static_cast<size_t>(dir.max_added)) continue;
         if (n == 3 && dir.dx != 0 && dir.dy != 0) continue;
 
-        path[len] = {nx, ny};
+        path[len+1] = {nx, ny};
         mask |= added;
-        dfs(mask, path, len+1, local_vertex_masks);
+        dfs(mask, path, len + 1, local_vertex_masks);
         mask &= ~added;
     }
 }
@@ -230,8 +230,8 @@ void search_from(std::vector<std::pair<int, int>> path) {
     }
 
     std::array<std::pair<int, int>, MAX_LEN+1> local_path;
-    int len = static_cast<int>(path.size());
-    for (int i = 0; i < len; ++i) {
+    int len = static_cast<int>(path.size()) - 1;
+    for (int i = 0; i <= len; ++i) {
         local_path[i] = path[i];
     }
 
