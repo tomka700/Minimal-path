@@ -95,6 +95,7 @@ std::mutex global_mutex;
 void force_obvious_moves(std::vector<std::vector<std::pair<int, int>>>& paths, std::vector<std::pair<int, int>>& starts) {
     if (n < 5) {
         paths.push_back({{1, 1}});
+        starts.push_back({1, 1});
         return;
     }
 
@@ -189,7 +190,7 @@ void dfs(std::bitset<TOTAL_BITS>& mask, std::array<std::pair<int, int>, MAX_LEN+
                 found = true;
                 global_best = len;
                 std::cout << "New best: " << len << ", Path: ";
-                for (int i = 0; i < len; ++i) {
+                for (int i = 0; i <= len; ++i) {
                     std::cout << "(" << path[i].first << "," << path[i].second << ")";
                 }
                 std::cout << "\n";
