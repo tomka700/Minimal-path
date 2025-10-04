@@ -41,9 +41,8 @@ g++ -std=c++2b -O3 -march=native -flto path.cpp -o path
 ---
 
 ### Notes
-- Chebyshev distance is used as it is equivalent in the case of only using (1,1) and (1,0) moves and it is faster
+- Chebyshev distance is used as it is equivalent in the case of only using `(1,1)` and `(1,0)` moves and it is faster
   - `n = 3` is the only special case, where false positives would arise, they are filtered out manually
-  - Accordingly, this program only tests `(1, 1)` and `(1, 0)` moves
 - The formulas used for `CURRENT_BEST` in the code are explained here: https://math.stackexchange.com/q/5036847
 - All moves of optimal solutions for `3 < n < 8` are zero waste, this is enforced as a general rule, see `added.count()`
 - `n = 8, 9` are good for testing as they run in human time
@@ -66,13 +65,10 @@ g++ -std=c++2b -O3 -march=native -flto path.cpp -o path
 - checking whether or not the remaining 0s are connected
   - bfs is slower for `n < 10` and thus hard to test
 - only checking 5 `dir`s instead of 8 based on the last `dir`
-  - unlikely due to coordinate calculations being slow
 - using a sliding window instead of the entirety of `VERTEX_MASKS`?
   - unlikely due to coordinate calculations being slow
   <br><br>
 - using `constexpr` more?
-- better max update logic?
-- better multithreading?
-- better ...
+- thread pooling?
   <br><br>
 - rewrite to use GPU instead??
