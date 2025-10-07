@@ -34,7 +34,7 @@
   - This option is exponentially faster, but it probably won't print any paths
 - Set `BRUTE_FORCE` to `true` if you don't want forced moves to be done manually
 ```ps
-g++ -std=c++2b -O3 -march=native -flto path.cpp -o path
+g++ -std=c++23 -O3 -march=native -flto path.cpp -o path
 ```
 **Disclaimer:** `n = 10` takes days to run, anything beyond that has yet to produce an optimal output
 
