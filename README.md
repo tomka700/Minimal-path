@@ -50,25 +50,17 @@ g++ -std=c++23 -O3 -march=native -flto path.cpp -o path
 ---
 
 ### Todo
-- use arrays where possible
-- reuse smaller solutions for the same `n mod 3`
 - prune starting dirs by symmetry
+- savestate and continue
+- try thread pooling
+- reuse smaller solutions for the same `n mod 3`
 - explain obvious moves in `force_obvious_moves`
-- savestate and continue?
 - early exit in case of too large `n`
 
 ---
 
-### Possible Optimizations
-- making use of more / better built-ins?
-  <br><br>
+### Idea Graveyard
 - checking whether or not the remaining 0s are connected
   - bfs is slower for `n < 10` and thus hard to test
 - only checking 5 `dir`s instead of 8 based on the last `dir`
-- using a sliding window instead of the entirety of `VERTEX_MASKS`?
-  - unlikely due to coordinate calculations being slow
-  <br><br>
-- using `constexpr` more?
-- thread pooling?
-  <br><br>
-- rewrite to use GPU instead??
+- using a sliding window instead of the entirety of `VERTEX_MASKS`
