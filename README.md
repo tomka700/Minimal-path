@@ -1,7 +1,6 @@
 # Minimal path to touch every square in an n by n grid
 
 ### Results
-`? = unproven`
 | n    | Length                              | # Orthogonals | # Diagonals | # Unique Solutions                  | # Solutions                         |
 |---|---:|---:|---:|---:|---:|
 | 0 | 0 | 0 | 0 | 1 | 1 |
